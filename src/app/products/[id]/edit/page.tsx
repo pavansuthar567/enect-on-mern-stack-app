@@ -61,7 +61,22 @@ function EditProduct({ params }: { params: { id: string } }) {
     validationSchema: basicSchema,
 
     onSubmit: async (values, actions) => {
-      alert("Please update the code.");
+      try {
+        const updatedProduct: UpdateProducts = {
+          ...values,
+          brands: values.brands.map((b) => b.value),
+          categories: values.categories.map((c) => c.value),
+          occasion: values.occasion.map((o) => o.value).join(","),
+        };
+
+        await updateProduct(id, updatedProduct);
+        toast.success("Product updated successfully!");
+        router.push(`/products`);
+      } catch (error) {
+        toast.error("Failed to update product. Please try again.");
+      } finally {
+        actions.setSubmitting(false);
+      }
     },
   });
 

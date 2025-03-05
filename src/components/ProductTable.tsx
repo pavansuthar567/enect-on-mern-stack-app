@@ -33,6 +33,7 @@ async function ProductTable({ products, numOfResultsOnCurPage }) {
           <th>Price</th>
           <th>Colors</th>
           <th>Rating</th>
+          <th>Discount</th>
           <th>Gender</th>
           <th>Categories</th>
           <th>Brands</th>

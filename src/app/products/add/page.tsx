@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { occasionOptions } from "../../../../constant";
 import Select from "react-select";
+import { toast } from "react-toastify";
+import { addProduct } from "@/actions/productActions";
 
 function AddProduct() {
   const [brandsOption, setBrandsOption] = useState([]);
@@ -42,7 +44,27 @@ function AddProduct() {
     validationSchema: basicSchema,
 
     onSubmit: async (values: any, actions) => {
-      alert("Please Update the Code");
+      try {
+        const brandIds = values.brands.map((brand) => brand.value);
+        const categoryIds = values.categories.map((category) => category.value);
+        const occasions = values.occasion.map((occ) => occ.value).join(",");
+
+        const productData = {
+          ...values,
+          brands: brandIds,
+          categories: categoryIds,
+          occasion: occasions,
+          price: values.old_price * (1 - values.discount / 100),
+        };
+
+        await addProduct(productData);
+
+        toast.success("Product added successfully");
+        router.push("/products");
+        actions.resetForm();
+      } catch (error) {
+        toast.error((error as Error).message || "Failed to add product");
+      }
     },
   });
 

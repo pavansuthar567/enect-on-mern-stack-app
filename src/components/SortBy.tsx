@@ -14,7 +14,7 @@ const sortingOptions = [
 function SortBy() {
   const router = useRouter();
   const params = useSearchParams();
-  const searchParams = new URLSearchParams(params);
+  const searchParams = new URLSearchParams(params?.toString());
 
   return (
     <div className="text-black flex gap-2">
@@ -24,7 +24,10 @@ function SortBy() {
         id="sorting"
         value={String(searchParams.get("sortBy"))}
         onChange={(e) => {
-          alert("Please update the code.");
+          searchParams.set("sortBy", e.target.value);
+          router.push(`/products?${searchParams?.toString()}`, {
+            scroll: false,
+          });
         }}
       >
         <option value="">None</option>

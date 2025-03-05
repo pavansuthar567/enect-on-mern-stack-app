@@ -41,6 +41,7 @@ function ProductRow({
           </div>
         </td>
         <td>{product.rating}</td>
+        <td>{product?.discount}</td>
         <td>{product.gender}</td>
         <td>
           <div className="flex flex-col gap-2">

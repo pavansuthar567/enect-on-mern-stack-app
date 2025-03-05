@@ -125,28 +125,50 @@ function Filter({ categories, brands }) {
     }
   }, [sliderValue]);
 
-  function handleBrandsSelect(e) {
-    alert("Please update the code.");
+  const handleCommonParams = () => {
+    searchParams.delete("page");
+    searchParams.delete("pageSize");
+  };
+  const handleFilterChange = (paramName, value) => {
+    handleCommonParams();
+    if (value) {
+      if (Array.isArray(value)) {
+        const joinedValues = value.map((option) => option.value).join(",");
+        searchParams.set(paramName, joinedValues);
+      } else {
+        searchParams.set(paramName, value);
+      }
+    } else {
+      searchParams.delete(paramName);
+    }
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
+  };
+
+  function handleBrandsSelect(selectedOptions) {
+    handleFilterChange("brandId", selectedOptions);
   }
 
-  function handleCategoriesSelected(e) {
-    alert("Please update the code.");
+  function handleCategoriesSelected(selectedOptions) {
+    setCategoriesSelected(selectedOptions);
+    handleFilterChange("categoryId", selectedOptions);
   }
 
   function handleSlider(e) {
-    alert("Please update the code.");
+    setSliderValue(e.target.value);
+    setSliderChanged(true);
   }
 
   const handleGenderChange = (e) => {
-    alert("Please update the code.");
+    setSelectedGender(e.target.value);
+    handleFilterChange("gender", e.target.value);
   };
 
-  function handleOccasions(e) {
-    alert("Please update the code.");
+  function handleOccasions(selectedOptions) {
+    handleFilterChange("occasions", selectedOptions);
   }
 
-  function handleDiscount(e) {
-    alert("Please update the code.");
+  function handleDiscount(selectedOption) {
+    handleFilterChange("discount", selectedOption?.value);
   }
 
   // function handleClearAll() {

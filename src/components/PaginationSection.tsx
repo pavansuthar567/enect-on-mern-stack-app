@@ -14,14 +14,26 @@ function PaginationSection({
   const router = useRouter();
 
   const query = useSearchParams();
-  const searchParams = new URLSearchParams(query);
+  const searchParams = new URLSearchParams(query.toString());
 
   function handlePrev() {
-    alert("Please update the code.");
+    if (pageNo > 1) {
+      searchParams.set("page", (pageNo - 1).toString());
+      router.push(`/products?${searchParams.toString()}`);
+    }
   }
 
   function handleNext() {
-    alert("Please update the code.");
+    if (pageNo < lastPage) {
+      searchParams.set("page", (pageNo + 1).toString());
+      router.push(`/products?${searchParams.toString()}`);
+    }
+  }
+
+  function handlePageSizeChange(e) {
+    searchParams.set("pageSize", e.target.value);
+    searchParams.set("page", "1"); // Reset to first page
+    router.push(`/products?${searchParams.toString()}`);
   }
 
   return (
@@ -30,9 +42,7 @@ function PaginationSection({
         value={pageSize}
         name="page-size"
         className="text-black"
-        onChange={(e) => {
-          alert("Please update the code.");
-        }}
+        onChange={handlePageSizeChange}
       >
         {["10", "25", "50"].map((val) => {
           return (
