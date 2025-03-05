@@ -1,4 +1,4 @@
-import { getProducts } from "@/actions/productActions";
+import { getAllProductCategories, getProducts } from "@/actions/productActions";
 import { DEFAULT_PAGE_SIZE } from "../../../constant";
 import PaginationSection from "@/components/PaginationSection";
 import SortBy from "@/components/SortBy";
@@ -25,30 +25,41 @@ export default async function Products({
     discount,
   } = searchParams as any;
 
+  const categoryIds = categoryId?.split(",").filter(Boolean).map(Number) || [];
+
   const filters = {
-    brands: brandId
-      ?.split(",")
-      ?.filter((x) => x)
-      ?.map(Number),
-    categoryId: categoryId
-      ?.split(",")
-      ?.filter((x) => x)
-      ?.map(Number),
+    brands: brandId?.split(",").filter(Boolean).map(Number),
+    categoryId: categoryIds,
     gender,
-    occasions: occasions?.split(",")?.filter((x) => x),
+    occasions: occasions?.split(",")?.filter(Boolean),
     price: +priceRangeTo || 0,
     sortBy,
     discount,
   };
 
-  const { products, lastPage, numOfResultsOnCurPage } = await getProducts(
-    +page,
-    +pageSize,
-    filters
-  );
+  const {
+    products: productList = [],
+    lastPage,
+    numOfResultsOnCurPage,
+  } = await getProducts(+page, +pageSize, filters);
 
   const brands = await getBrands();
   const categories = await getCategories();
+  const productCategories = await getAllProductCategories(productList);
+
+  let products = productList;
+  let newLastPage = lastPage;
+  let totalFilteredData = numOfResultsOnCurPage;
+
+  if (categoryIds?.length > 0) {
+    products = productList.filter((x) =>
+      (productCategories.get(x?.id) || []).some(({ id }) =>
+        categoryIds.includes(id)
+      )
+    );
+    newLastPage = Math.ceil(products?.length / pageSize);
+    totalFilteredData = products.length;
+  }
 
   return (
     <div className="pb-20 pt-8">
@@ -66,12 +77,12 @@ export default async function Products({
       >
         <ProductTable
           products={products}
-          numOfResultsOnCurPage={numOfResultsOnCurPage}
+          numOfResultsOnCurPage={totalFilteredData}
         />
       </Suspense>
       {products.length > 0 && (
         <PaginationSection
-          lastPage={lastPage}
+          lastPage={newLastPage}
           pageNo={+page}
           pageSize={+pageSize}
         />

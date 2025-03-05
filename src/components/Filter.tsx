@@ -131,10 +131,14 @@ function Filter({ categories, brands }) {
   };
   const handleFilterChange = (paramName, value) => {
     handleCommonParams();
-    if (value) {
+    if (value || (Array.isArray(value) && value?.length > 0)) {
       if (Array.isArray(value)) {
-        const joinedValues = value.map((option) => option.value).join(",");
-        searchParams.set(paramName, joinedValues);
+        if (value?.length > 0) {
+          const joinedValues = value.map((option) => option.value).join(",");
+          searchParams.set(paramName, joinedValues);
+        } else {
+          searchParams.delete(paramName);
+        }
       } else {
         searchParams.set(paramName, value);
       }

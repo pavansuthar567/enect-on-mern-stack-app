@@ -212,7 +212,7 @@ export async function getAllProductCategories(products: any) {
           "categories.id",
           "product_categories.category_id"
         )
-        .select("categories.name")
+        .select(["categories.id", "categories.name"])
         .where("product_categories.product_id", "=", productId)
         .execute();
       categoriesMap.set(productId, categories);
